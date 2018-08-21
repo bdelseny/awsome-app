@@ -1,24 +1,27 @@
 <template>
-<h1>{{ msg }}</h1>
+<h1 class="Patate">{{ msg }}</h1>
 </template>
 
 <script>
 export default {
   name: "Patate",
   props: {},
-  created() {
+  created: function() {
     // fetch the data when the view is created and the data is
     // already being observed
-    this.msg = this.fetchData();
+    this.fetchData();
+  },
+  data: function() {
+    return {
+      msg: "Before server answers"
+    };
   },
   watch: {
     // call again the method if the route changes
     $route: "fetchData"
   },
   methods: {
-    fetchData() {
-      this.msg = "Method called";
-      var that = this;
+    fetchData: function() {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "text/plain");
       var getUsers = new Request("http://localhost:3000/users", {
@@ -27,23 +30,13 @@ export default {
         mode: "cors",
         cache: "default"
       });
-      return fetch(getUsers)
-        .then(response => {
-          response.json().then(function(data) {
-            console.log(data.test);
-            return data.test;
+      fetch(getUsers)
+        .then((response) => {
+          response.json().then((data) => {
+            this.msg = data.test;
           });
         })
         .catch(console.log);
-      // replace `getPost` with your data fetching util / API wrapper
-      // getPost(this.$route.params.id, (err, post) => {
-      //   this.loading = false;
-      //   if (err) {
-      //     this.error = err.toString();
-      //   } else {
-      //     this.post = post;
-      //   }
-      // });
     }
   }
 };
